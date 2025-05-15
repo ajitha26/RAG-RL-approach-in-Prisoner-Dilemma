@@ -1,55 +1,79 @@
-🧠 Retrieval-Augmented Reinforcement Learning (RAG + PPO) in Social Dilemmas
-🧩 Problem Overview
-In multi-agent environments like the Iterated Prisoner's Dilemma, teaching LLM-based agents to behave in socially intelligent ways (cooperation, retaliation, forgiveness) remains a challenge. This project explores a hybrid architecture combining:
 
-Retrieval-Augmented Generation (RAG): Supplies behavioral context/examples from prior interactions.
+# 🧠 RAG + PPO: Reinforcement Learning Meets Retrieval in Social Dilemmas
 
-Proximal Policy Optimization (PPO): Reinforces actions that lead to higher long-term rewards (e.g., cooperation payoffs).
+## 📌 Overview
+This project explores a hybrid RAG (Retrieval-Augmented Generation) and PPO (Proximal Policy Optimization) approach to teach LLM-based agents socially adaptive behavior in the **Iterated Prisoner's Dilemma** — a classic setting for studying trust, cooperation, and betrayal.
 
-🧭 Architecture
-🔄 Training Workflow
-Environment: Iterated Prisoner's Dilemma against fixed policies (e.g., Tit for Tat, Always Defect).
+## 🧠 Motivation
+Traditional reinforcement learning agents struggle with **human-like reasoning** in social games. By introducing **retrieval mechanisms**, we allow agents to reference **past behaviors** and adapt more intelligently — similar to how humans learn from memory.
 
-Agent: A language model that learns to play optimally via PPO, conditioned on past rounds and retrieved samples.
+---
 
-History Buffer: Stores tuples of (opponent policy, recent moves, outcomes) every few episodes.
+## ⚙️ Architecture
 
-Retriever: Every N steps, retrieves similar past behaviors from buffer to guide generation (using cosine or embedding similarity).
+### ✅ Components:
+- **Environment**: Iterated Prisoner's Dilemma (IPD)
+- **Agent**: Language model (LLM-based policy)
+- **Retriever**: Fetches similar behavioral episodes
+- **History Buffer**: Stores `(opponent policy, moves, rewards)`
+- **PPO Trainer**: Optimizes the agent’s strategy over time
 
-Generator: Generates next move (Cooperate or Defect) based on:
+### 🔄 Workflow:
+1. Agent plays repeated rounds of IPD.
+2. Every *N* steps:
+   - Retrieve top-*k* similar past episodes.
+   - Combine with current observation as input.
+3. Agent generates next action (Cooperate/Defect).
+4. Environment returns reward.
+5. PPO updates the policy based on total episodic return.
 
-Current observation (history, opponent behavior)
+---
 
-Retrieved memory
+## 🧪 Evaluation: Fixed Opponent Benchmarks
 
-Policy Update: PPO optimizes the generator by comparing rewards over episodes and updating the behavior policy.
+| Opponent Policy        | Description                              | PPO Behavior Summary             | Success |
+|------------------------|------------------------------------------|----------------------------------|---------|
+| Tit for Tat            | Cooperates, mimics last move             | Learned to cooperate             | ✅      |
+| Always Defect          | Always defects                           | Learned to defect in return      | ✅      |
+| Always Cooperate       | Always cooperates                        | Exploited with defect            | ✅      |
+| Friedman               | Punishes once defected                   | Early defection triggered loss   | ❌      |
+| Joss                   | 90% cooperation, 10% random defect       | Mostly cooperative               | ✅      |
+| Tester                 | Cooperates, then defects permanently     | Detected pattern, adapted        | ✅      |
+| Backstabber            | Cooperates 5 rounds, then defects always | Delayed detection, adapted late  | ✅      |
 
-🔧 Key Mechanism: RAG-PPO Fusion
-Every 10 steps:
+---
 
-Retrieve top-k past behaviors using similarity.
+## 💡 Why It Matters
 
-Fuse retrieved examples into model input.
+- 🧠 **Memory-Augmented Decision-Making**: Simulates how humans use memory + feedback.
+- 📚 **Education Modeling**: Extendable to student-agent modeling based on thinking patterns.
+- 🤖 **Social Agent Foundations**: Step toward adaptive, context-aware, LLM-powered agents in dynamic interactions.
 
-Generate action → get reward → update PPO.
+---
 
-This blends memory and learning, enabling better adaptation across strategies.
+## 🛠️ Future Directions
+- Expand to 1v1 adaptive LLM vs LLM agents
+- Fine-tune models on specific interaction traits (e.g., trust, retaliation)
+- Visualize evolving policy strategies over time
 
-🧪 Evaluation: Fixed Policy Opponents
-Opponent Policy	Description	PPO Behavior Summary	Success ✅/❌
-Tit for Tat	Cooperates, mimics last move	Learned to cooperate	✅
-Always Defect	Always defects	Learned to defect in return	✅
-Always Cooperate	Always cooperates	Exploited with defect	✅
-Friedman	Punishes once defected	Early defection triggered loss	❌
-Joss	90% cooperation, 10% random defect	Mostly cooperative	✅
-Tester	Cooperates, then defects permanently	Detected pattern, adapted	✅
-Backstabber	Cooperates 5 rounds, then defects always	Delayed detection, adapted late	✅
+---
 
-🧠 Why This Matters
-Human-like Generalization: Mimics how people use memory + real-time feedback to behave.
+## 📁 Folder Structure
+rag-ppo-ipd/
+├── agents/ # LLM policy + retriever wrapper
+├── env/ # Prisoner's Dilemma environment
+├── trainer/ # PPO implementation
+├── data/ # Episode history buffer
+├── notebooks/ # Experiments and visualizations
+└── README.md # You are here 🚀
 
-Educational Modeling: Could be extended to simulate student learning responses in dynamic settings.
+yaml
+Copy
+Edit
 
-Multi-Agent Foundations: A step toward building socially intelligent LLM agents capable of adapting to evolving behaviors, not just static prompts.
+---
+
+## 📜 Citation / Inspiration
+If you're inspired by this work, feel free to fork, cite, or reach out!
 
 
